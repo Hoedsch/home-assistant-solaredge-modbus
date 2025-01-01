@@ -935,7 +935,8 @@ class SolaredgeModbusHub:
         )
 
         # 0x6C - 2 - avg temp C
-        tempavg = decoder.decode_32bit_float()
+        # avoid negative values in case of battery communication issues
+        tempavg = max(0,decoder.decode_32bit_float())
         # 0x6E - 2 - max temp C
         tempmax = decoder.decode_32bit_float()
         # 0x70 - 2 - inst voltage V
@@ -949,13 +950,17 @@ class SolaredgeModbusHub:
         # 0x7a - 4 - cumulative charged (Wh)
         cumulative_charged = decoder.decode_64bit_uint()
         # 0x7E - 2 - current max size Wh
-        battery_max = decoder.decode_32bit_float()
+        # avoid negative values in case of battery communication issues
+        battery_max = max(0,decoder.decode_32bit_float())
         # 0x80 - 2 - available size Wh
-        battery_availbable = decoder.decode_32bit_float()
+        # avoid negative values in case of battery communication issues
+        battery_availbable = max(0,decoder.decode_32bit_float())
         # 0x82 - 2 - SoH %
-        battery_SoH = decoder.decode_32bit_float()
+        # avoid negative values in case of battery communication issues
+        battery_SoH = max(0,decoder.decode_32bit_float())
         # 0x84 - 2 - SoC %
-        battery_SoC = validate(decoder.decode_32bit_float(), ">=", 0.0)
+        # avoid negative values in case of battery communication issues
+        battery_SoC = max(0,decoder.decode_32bit_float())
         battery_SoC = validate(battery_SoC, "<", 101)
 
         self.data[battery_prefix + "temp_avg"] = round(tempavg, 1)
